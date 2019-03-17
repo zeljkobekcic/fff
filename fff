@@ -373,32 +373,9 @@ draw_img() {
     get_mime_type "${list[scroll]}"
     [[ $mime_type != image/* ]] &&
         return
-
-    # w3m-img isn't installed, do nothing.
-    type -p "$w3m" &>/dev/null || {
-        cmd_line "error: Couldn't find 'w3m-img', is it installed?"
-        return
-    }
-
-    # $win_info_cmd isn't installed, do nothing.
-    type -p "${win_info_cmd:=xdotool}" &>/dev/null || {
-        cmd_line "error: Couldn't find '$win_info_cmd', is it installed?"
-        return
-    }
-
-    # Get terminal window size in pixels and set it to WIDTH and HEIGHT.
-    if [[ $win_info_cmd == xdotool ]]; then
-        IFS=$'\n' read -d "" -ra win_info \
-            < <(xdotool getactivewindow getwindowgeometry --shell)
-
-        declare "${win_info[@]}" &>/dev/null || {
-            cmd_line "error: Failed to retrieve window size."
-            return
-        }
-    else
-        [[ $(fbset --show) =~ .*\"([0-9]+x[0-9]+)\".* ]]
-        IFS=x read -r WIDTH HEIGHT <<< "${BASH_REMATCH[1]}"
-    fi
+    
+    WIDTH=$(tput cols)
+    HEIGHT=$(tput lines)
 
     # Get the image size in pixels.
     read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
@@ -423,23 +400,24 @@ draw_img() {
     ((BASH_VERSINFO[0] > 3)) &&
         read "${read_flags[@]}" -srn 1
 
-    # Display the image.
-    printf '0;1;%s;%s;%s;%s;;;;;%s\n3;\n4\n' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$img_width" \
-        "$img_height" \
-        "${list[scroll]}" | "$w3m" &>/dev/null
+    if [ -e "$FIFO_UEBERZUG" ]; then
+        source "`ueberzug library`"
+
+        declare -p -A cmd=([action]="add" \
+                           [identifier]="${PPID}-ueberzug" \
+                           [x]="${FFF_W3M_XOFFSET:-0}" \
+                           [y]="${FFF_W3M_YOFFSET:-0}" \
+                           [width]="$img_width" \
+                           [height]="$img_height" \
+                           [path]="${list[scroll]}") > "$FIFO_UEBERZUG"
+        read -r
+        declare -p -A cmd=([action]=remove [identifier]="${PPID}-ueberzug") \
+            > "$FIFO_UEBERZUG"
+    fi
+    
 
     # Wait for user input.
-    read -ern 1
-
-    # Clear the image.
-    printf '6;%s;%s;%s;%s\n3;' \
-        "${FFF_W3M_XOFFSET:-0}" \
-        "${FFF_W3M_YOFFSET:-0}" \
-        "$WIDTH" \
-        "$HEIGHT" | "$w3m" &>/dev/null
+    
 
     redraw
 }
@@ -1109,4 +1087,18 @@ main() {
     }
 }
 
+export FIFO_UEBERZUG="/tmp/vifm-ueberzug-${PPID}"
+
+function cleanup {
+    rm "$FIFO_UEBERZUG" 2>/dev/null
+    pkill -P $$ 2>/dev/null
+}
+
+rm "$FIFO_UEBERZUG" 2>/dev/null
+mkfifo "$FIFO_UEBERZUG"
+trap cleanup EXIT
+tail --follow "$FIFO_UEBERZUG" | ueberzug layer --silent --parser bash &
+
 main "$@"
+
+cleanup

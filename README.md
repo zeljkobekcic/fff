@@ -4,6 +4,8 @@
 
 A simple file manager written in `bash`.
 
+This has been done with the "help" of the author of `ueberzug` via this reddit thread here [**link**](https://www.reddit.com/r/linux/comments/aviu08/ueberzug_v1810_released/) where he provides the code to use `ueberzug` with `vifm`. But I want to use `fff` instead. Thank you @seebye 
+
 <a href="https://discord.gg/BtnTPFF"><img src="https://img.shields.io/discord/440354555197128704.svg"></a>
 <a href="https://travis-ci.org/dylanaraps/fff"><img src="https://travis-ci.org/dylanaraps/fff.svg?branch=master"></a>
 <a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
@@ -19,7 +21,7 @@ A simple file manager written in `bash`.
 - Tab completion for all commands!
 - Automatic CD on exit (*see [setup](#cd-on-exit)*)
 - Works as a **file picker** in `vim`/`neovim` ([**link**](https://github.com/dylanaraps/fff.vim))!
-- **Display images with w3m-img!**
+- **Display images with <span style="color:red">ueberzug and not w3m-img!</span>**
 - Supports `$CDPATH`.
 
 
@@ -56,10 +58,9 @@ A simple file manager written in `bash`.
     - *Customizable (if not using `xdg-open`): `$FFF_OPENER`.*
 
 **Dependencies for image display**
-
-- `w3m-img`
-- `xdotool` for X.
+- `tput` for the terminal size
 - `fbset` for the framebuffer.
+- `ueberzug` for the actual image display. Get it here [**link**](https://github.com/seebye/ueberzug)
 
 
 ## Installation
