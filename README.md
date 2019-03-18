@@ -4,12 +4,10 @@
 
 A simple file manager written in `bash`.
 
-This has been done with the "help" of the author of `ueberzug` via this reddit thread here [**link**](https://www.reddit.com/r/linux/comments/aviu08/ueberzug_v1810_released/) where he provides the code to use `ueberzug` with `vifm`. But I want to use `fff` instead. Thank you @seebye 
-
-<a href="https://discord.gg/BtnTPFF"><img src="https://img.shields.io/discord/440354555197128704.svg"></a>
-<a href="https://travis-ci.org/dylanaraps/fff"><img src="https://travis-ci.org/dylanaraps/fff.svg?branch=master"></a>
-<a href="https://github.com/dylanaraps/fff/releases"><img src="https://img.shields.io/github/release/dylanaraps/fff.svg"></a>
-<a href="https://repology.org/metapackage/fff"><img src="https://repology.org/badge/tiny-repos/fff.svg" alt="Packaging status"></a>
+The code for the `ueberzug` image view part has been taken from here
+[**link**](https://www.reddit.com/r/linux/comments/aviu08/ueberzug_v1810_released/)
+and modified. The code has been written for `vifm` but I want to use `fff` with
+`ueberzug` because `ueberzug` is awesome.
 
 - It's Fucking Fast 🚀
 - Minimal (*only requires **bash** and coreutils*)
@@ -31,7 +29,6 @@ This has been done with the "help" of the author of `ueberzug` via this reddit t
 
 * [Dependencies](#dependencies)
 * [Installation](#installation)
-    * [Distros](#distros)
     * [Manual](#manual)
     * [CD on Exit](#cd-on-exit)
 * [Usage](#usage)
@@ -65,18 +62,10 @@ This has been done with the "help" of the author of `ueberzug` via this reddit t
 
 ## Installation
 
-### Distros
-
-- Arch Linux (based): `pacman -S fff`
-- Haiku: `pkgman install fff`
-- Nix: `nix-env -iA fff`
-- Void Linux: `xbps-install -S fff`
-
 ### Manual
 
 1. Download `fff`.
-    - Release: https://github.com/dylanaraps/fff/releases/latest
-    - Git: `git clone https://github.com/dylanaraps/fff`
+    - Git: `git clone https://github.com/zeljkobekcic/fff`
 2. Change working directory to `fff`.
     - `cd fff`
 3. Run `make install` inside the script directory to install the script.
@@ -85,6 +74,8 @@ This has been done with the "help" of the author of `ueberzug` via this reddit t
     - **OpenIndiana**: `gmake install`
     - **MinGW/MSys**: `make -i install`
     - **NOTE**: You may have to run this as root.
+4. Install `ueberzug`
+    - `sudo pip install ueberzug`
 
 **NOTE:** `fff` can be uninstalled easily using `make uninstall`. This removes all of files from your system.
 
