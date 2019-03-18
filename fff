@@ -1011,6 +1011,7 @@ key() {
             [[ ${FFF_CD_ON_EXIT:=1} == 1 ]] &&
                 printf '%s\n' "$PWD" > "$FFF_CD_FILE"
 
+            cleanup
             exit
         ;;
     esac
@@ -1087,7 +1088,7 @@ main() {
     }
 }
 
-export FIFO_UEBERZUG="/tmp/vifm-ueberzug-${PPID}"
+export FIFO_UEBERZUG="/tmp/fff-ueberzug-${PPID}"
 
 function cleanup {
     rm "$FIFO_UEBERZUG" 2>/dev/null
@@ -1100,5 +1101,4 @@ trap cleanup EXIT
 tail --follow "$FIFO_UEBERZUG" | ueberzug layer --silent --parser bash &
 
 main "$@"
-
 cleanup
