@@ -6,7 +6,7 @@ A simple file manager written in `bash`.
 
 The code for the `ueberzug` image view part has been taken from here
 [**link**](https://www.reddit.com/r/linux/comments/aviu08/ueberzug_v1810_released/)
-and modified. The code has been written for `vifm` but I want to use `fff` with
+and modified. It has been written for `vifm` but I want to use `fff` with
 `ueberzug` because `ueberzug` is awesome.
 
 - It's Fucking Fast 🚀

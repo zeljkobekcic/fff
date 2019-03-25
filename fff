@@ -136,21 +136,6 @@ get_ls_colors() {
     export "${ls_cols[@]}" &>/dev/null
 }
 
-get_w3m_path() {
-    # Find the path to the w3m-img library.
-    # If w3mimgdisplay is already in path, use it.
-    type -p w3mimgdisplay &>/dev/null && {
-        w3m="w3mimgdisplay"
-        return
-    }
-
-    # Use a glob and expansion to find the path.
-    w3m_paths=(/usr/{local/,}{lib,libexec,lib64,libexec64}/w3m/w3mi*)
-
-    [[ -x ${w3m_paths[0]} ]] &&
-        w3m="${w3m_paths[0]}"
-}
-
 get_mime_type() {
     # Get a file's mime_type.
     mime_type="$(file "-${file_flags:-biL}" "$1")"
@@ -360,7 +345,7 @@ draw_dir() {
 }
 
 draw_img() {
-    # Draw an image file on the screen using w3m-img.
+    # Draw an image file on the screen using ueberzug.
     # We can use the framebuffer; set win_info_cmd as appropriate.
     [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
         win_info_cmd="fbset"
@@ -374,11 +359,13 @@ draw_img() {
     [[ $mime_type != image/* ]] &&
         return
     
-    WIDTH=$(tput cols)
-    HEIGHT=$(tput lines)
+    WIDTH=$COLUMNS
+    HEIGHT=$LINES
 
     # Get the image size in pixels.
-    read -r img_width img_height < <("$w3m" <<< "5;${list[scroll]}")
+    x=`identify -format '%w %h' ${list[scroll]}`
+    img_width=`echo $x | cut -d ' ' -f1`
+    img_height=`echo $x | cut -d ' ' -f2`
 
     # Substract the status_line area from the image size.
     ((HEIGHT=HEIGHT-HEIGHT*5/LINES))
@@ -400,7 +387,7 @@ draw_img() {
     ((BASH_VERSINFO[0] > 3)) &&
         read "${read_flags[@]}" -srn 1
 
-    if [ -e "$FIFO_UEBERZUG" ]; then
+    [ -e $FIFO_UEBERZUG ] && {
         source "`ueberzug library`"
 
         declare -p -A cmd=([action]="add" \
@@ -410,15 +397,11 @@ draw_img() {
                            [width]="$img_width" \
                            [height]="$img_height" \
                            [path]="${list[scroll]}") > "$FIFO_UEBERZUG"
-        read -r
+        read -n 1 -s -r
         declare -p -A cmd=([action]=remove [identifier]="${PPID}-ueberzug") \
             > "$FIFO_UEBERZUG"
-    fi
+    }
     
-
-    # Wait for user input.
-    
-
     redraw
 }
 
@@ -952,7 +935,7 @@ key() {
                 clear_screen
                 status_line "${list[scroll]}"
                 stat "${list[scroll]}"
-                read -ern 1
+                read -esrn 1
                 redraw
             }
         ;;
@@ -1074,7 +1057,6 @@ main() {
 
     get_os
     get_term_size
-    get_w3m_path
     setup_options
     setup_terminal
     redraw full
@@ -1090,7 +1072,7 @@ main() {
 
 export FIFO_UEBERZUG="/tmp/fff-ueberzug-${PPID}"
 
-function cleanup {
+cleanup() {
     rm "$FIFO_UEBERZUG" 2>/dev/null
     pkill -P $$ 2>/dev/null
 }
@@ -1101,4 +1083,3 @@ trap cleanup EXIT
 tail --follow "$FIFO_UEBERZUG" | ueberzug layer --silent --parser bash &
 
 main "$@"
-cleanup
