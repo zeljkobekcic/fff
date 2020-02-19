@@ -2,7 +2,7 @@
 
 <a href="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp" target="_blank"><img src="https://asciinema.org/a/qvNlrFrGB3xKZXb6GkremjZNp.svg" alt="img" height="210px" align="right"/></a>
 
-A simple file manager written in `bash`.
+A simple file manager written in `bash`. 
 
 The code for the `ueberzug` image view part has been taken from here
 [**link**](https://www.reddit.com/r/linux/comments/aviu08/ueberzug_v1810_released/)
@@ -61,6 +61,10 @@ and modified. It has been written for `vifm` but I want to use `fff` with
 
 
 ## Installation
+
+### AUR
+
+Now available in the [AUR](https://aur.archlinux.org/packages/fff-ueberzug-git/)!
 
 ### Manual
 
